@@ -1,8 +1,10 @@
+# CESG 506 - Nonlinear Analysis of Structural Systems
+# Assignment 1 - Problem 1-1:
+# Study of different formulations for large deformation problems
+# Tatsuhiko Sweet, 4/14/2020
+
 import numpy as np
 import matplotlib.pyplot as plt
-
-# CESG 506 - HW1 Problem 1
-# Tatsuhiko Sweet
 
 w = 5.5    # m
 H = 0.5    # m
