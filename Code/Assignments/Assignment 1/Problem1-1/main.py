@@ -78,6 +78,7 @@ if whatToPlot == 'P':
     plt.plot(u, P_cN, label="$P_{cN}$")
     plt.plot(u, P_dN, label="$P_{dN}$")
     plt.ylabel('P [kN]')
+    fileName = 'force_vs_disp'
 
 # Plot Strains
 elif whatToPlot == 'e':
@@ -86,6 +87,7 @@ elif whatToPlot == 'e':
     plt.plot(u, e_c, label="$\epsilon_c$")
     plt.plot(u, e_d, label="$\epsilon_d$")
     plt.ylabel('Strain')
+    fileName = 'strain_vs_disp'
 
 plt.xlabel('u [m]')
 plt.legend(loc='best', ncol=3, framealpha=1)
@@ -93,4 +95,5 @@ plt.xlim([0, umax])
 plt.ylim([-1.5, 2])
 plt.axhline(y=0, color='black')
 plt.grid(True)
+plt.savefig("CESG506/Code/Assignments/Assignment 1/Problem1-1/{}".format(fileName))
 plt.show()

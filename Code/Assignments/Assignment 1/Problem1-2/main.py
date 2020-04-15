@@ -84,7 +84,6 @@ except:
     print("Couldn't write Residuals to a .txt file")
 
 # Plotting Error Results (Part 5 of Assignment) #######################################################################
-plot2 = plt.figure(2)
 for result in results:
     plt.plot(result['Step'], result['R'], '-o',
              label="$\gamma = ${}".format(result['Gamma']))
