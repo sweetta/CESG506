@@ -18,6 +18,7 @@ n_pts = 1001      # number of points to plot
 LL = w*w + H*H    # Undeformed length squared
 L  = np.sqrt(LL)  # Undeformed length
 Ny = H/L          # y-component of Undeformed N vector
+k_ln = (EA/L)*Ny*Ny
 
 # Initialize Deformed Parameters
 u = np.linspace(0.0, umax, n_pts)    # Displacement Domain
@@ -32,6 +33,7 @@ e_d = n_pts*[0]
 
 # Initialize P for each case
 # Naming convention => P_(strain index, a,b,c, or d)(N = undeformed, n = deformed)
+P_ln = n_pts*[0]
 P_aN = n_pts*[0]
 P_an = n_pts*[0]
 P_bN = n_pts*[0]
@@ -48,11 +50,12 @@ for idx in range(n_pts):
     l = np.sqrt(ll)
     ny[idx] = (H - ui) / l
 
-    e_a[idx] = (l - L) / np.sqrt(LL)
+    e_a[idx] = (l - L) / np.sqrt(LL)        # Strains
     e_b[idx] = 0.5 * (ll - LL) / LL
     e_c[idx] = 0.5 * (ll - LL) / ll
     e_d[idx] = 0.5 * np.log(ll / LL)
 
+    P_ln[idx] = k_ln*ui                     # Applied force P (just y comp)
     P_aN[idx] = -EA * e_a[idx] * Ny
     P_an[idx] = -EA * e_a[idx] * ny[idx]
     P_bN[idx] = -EA * e_b[idx] * Ny
@@ -65,6 +68,7 @@ for idx in range(n_pts):
 # Plotting
 # Plot P's
 if whatToPlot == 'P':
+    plt.plot(u, P_ln, label="$P_{linear}$")
     plt.plot(u, P_an, label="$P_{an}$")
     plt.plot(u, P_bn, label="$P_{bn}$")
     plt.plot(u, P_cn, label="$P_{cn}$")
@@ -84,7 +88,9 @@ elif whatToPlot == 'e':
     plt.ylabel('Strain')
 
 plt.xlabel('u [m]')
-plt.legend(loc='upper left', ncol=2)
+plt.legend(loc='best', ncol=3, framealpha=1)
 plt.xlim([0, umax])
+plt.ylim([-1.5, 2])
+plt.axhline(y=0, color='black')
 plt.grid(True)
 plt.show()
