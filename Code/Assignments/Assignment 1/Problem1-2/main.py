@@ -22,6 +22,8 @@ Pcr = np.array([0, -0.98171345])
 gamma = [0, 0.25, 0.5, 0.75, 0.99, 0.999]
 # gamma = np.linspace(0.999999, 1.00000001, 2000)  # Used for finding Pcr
 
+# End Inputs ##########################################################################################################
+
 # Undeformed Length Vectors
 L1 = np.array([w1, H])
 L2 = np.array([-w2, H])
@@ -68,16 +70,31 @@ for g in gamma:
         u = u + np.dot(np.linalg.inv(Kf), R)    # Update displacement vector
     results.append({'P': P, 'u': u, 'R': R_list, 'Step': step_list, 'Gamma': g})
 
-# Plotting Error Results (Part 5 of Assignment)
+# Create a table summarizing residuals for each iteration step (Part 4 of Assignment) #################################
+#   each row begins with: gamma*Pcr, Py, residuals ...
+try:
+    f = open("CESG506/Code/Assignments/Assignment 1/Problem1-2/residuals.txt", "w")
+    for result in results:
+        f.write(str(result['Gamma']) + 'Pcr, ')
+        f.write(str(result['P'][1]) + ', ')
+        f.write(str(result['R']).strip('[').strip(']') + '\n')
+    f.write('Note: Tolerance = {}, Pcr = {} kN'.format(tol, Pcr))
+    f.close()
+except:
+    print("Couldn't write Residuals to a .txt file")
+
+# Plotting Error Results (Part 5 of Assignment) #######################################################################
+plot2 = plt.figure(2)
 for result in results:
     plt.plot(result['Step'], result['R'], '-o',
              label="$\gamma = ${}".format(result['Gamma']))
 plt.plot([], ' ', label='Tol = {}'.format(tol))
 plt.axhline(y=tol, color='black')
 plt.yscale('log')
-plt.ylabel('|R| [m]')
+plt.ylabel('|R| [kN]')
 plt.xlabel('Cummulative Step Count')
 plt.legend(loc='upper left', ncol=1, bbox_to_anchor=(1, 1))
 plt.grid(True)
 plt.tight_layout()
+plt.savefig("CESG506/Code/Assignments/Assignment 1/Problem1-2/R_vs_IterationStep")
 plt.show()
