@@ -15,12 +15,13 @@ EA = 2100 # kN
 
 # Convergence criteria
 max_iteration = 1000
-tol = 1e-12
+tol = 1e-12 # kN
 
 # P vectors
 Pcr = np.array([0, -0.98171345])
 gamma = [0, 0.25, 0.5, 0.75, 0.99, 0.999]
-# gamma = np.linspace(0.999999, 1.00000001, 2000)  # Used for finding Pcr
+# gamma = [0, 0.25, 0.5, 0.75, 0.99, 0.999, 0.75, 0.5, 0.25, 0, -0.25, -0.5] # Test for following load path
+# gamma = np.linspace(0.999999, 1.00000001, 2000)  # Used for finding Pcr, but the plot legend is not compatible
 
 # End Inputs ##########################################################################################################
 
@@ -78,7 +79,7 @@ try:
         f.write(str(result['Gamma']) + 'Pcr, ')
         f.write(str(result['P'][1]) + ', ')
         f.write(str(result['R']).strip('[').strip(']') + '\n')
-    f.write('Note: Tolerance = {}, Pcr = {} kN'.format(tol, Pcr))
+    f.write('Note: Tolerance = {} kN, Pcr = {} kN'.format(tol, Pcr))
     f.close()
 except:
     print("Couldn't write Residuals to a .txt file")
@@ -87,11 +88,11 @@ except:
 for result in results:
     plt.plot(result['Step'], result['R'], '-o',
              label="$\gamma = ${}".format(result['Gamma']))
-plt.plot([], ' ', label='Tol = {}'.format(tol))
+plt.plot([], '-', label='Tol = {}'.format(tol), color='black',)
 plt.axhline(y=tol, color='black')
 plt.yscale('log')
 plt.ylabel('|R| [kN]')
-plt.xlabel('Cummulative Step Count')
+plt.xlabel('Cumulative Step Count')
 plt.legend(loc='upper left', ncol=1, bbox_to_anchor=(1, 1))
 plt.grid(True)
 plt.tight_layout()
