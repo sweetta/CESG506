@@ -125,9 +125,8 @@ for ui in uk:
         gamma = gamma + dU[6]
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Plot of gamma vs displacement, part 3 of assignment problem
+# Plot of gamma vs displacement, part c of assignment problem
 # ----------------------------------------------------------------------------------------------------------------------
-
 plt.figure(1, figsize=(16, 8))
 plt.subplot(2, 1, 1)
 plt.plot(U5u, G, label="$U5_u$", marker='.')
@@ -153,3 +152,42 @@ plt.grid(True)
 plt.savefig("CESG506/Code/Assignments/Assignment 2/Problem2-2/Prob2-2_GammaVsDisp")
 plt.show()
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Planner View of Equilibrium path, part d of assignment problem
+# ----------------------------------------------------------------------------------------------------------------------
+plt.figure(1, figsize=(12, 10))
+
+plt.subplot(2, 2, 1)
+plt.plot(U5u, U5w, label="$U_5$ xz plane view", marker='.')
+plt.xlabel('$U5_x$ [m]')
+plt.ylabel('$U5_z$ [m]')
+plt.legend(loc='best', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+
+plt.subplot(2, 2, 3)
+plt.plot(U5v, U5w, label="$U_5$ yz plane view", marker='.')
+plt.xlabel('$U5_y$ [m]')
+plt.ylabel('$U5_z$ [m]')
+plt.legend(loc='best', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+
+plt.subplot(2, 2, 2)
+plt.plot(U6u, U6w, label="$U_6$ xz plane view", marker='.')
+plt.xlabel('$U6_x$ [m]')
+plt.ylabel('$U6_z$ [m]')
+plt.legend(loc='best', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+
+plt.subplot(2, 2, 4)
+plt.plot(U6v, U6w, label="$U_6$ yz plane view", marker='.')
+plt.xlabel('$U6_y$ [m]')
+plt.ylabel('$U6_z$ [m]')
+plt.legend(loc='best', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+
+plt.savefig("CESG506/Code/Assignments/Assignment 2/Problem2-2/Prob2-2_EquilibriumPath")
+plt.show()
