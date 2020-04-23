@@ -85,7 +85,7 @@ for ui in uk:
         gamma = gamma + dU[2]
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Plot of gamma vs displacement, part 3 of assignment problem ----------------------------------------------------------
+# Plot of gamma vs displacement, part 3 of assignment problem
 # ----------------------------------------------------------------------------------------------------------------------
 plt.figure(1, figsize=(16, 8))
 plt.plot(Uu, G, label="$U_u$", marker='.')
@@ -101,7 +101,7 @@ plt.savefig("CESG506/Code/Assignments/Assignment 2/Problem2-1/Prob2-1_GammaVsDis
 plt.show()
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Plot of u vs v, with Fx(u,v) and Fy(u,v) contour plot, part 4 of assignment problem ----------------------------------
+# Plot of u vs v, with Fx(u,v) and Fy(u,v) contour plot, part 4 of assignment problem
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute contour plot values
 grid_n = 100

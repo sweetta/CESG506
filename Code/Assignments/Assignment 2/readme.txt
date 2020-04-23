@@ -21,7 +21,9 @@ Problem 2-2
         Gamma vs Displacement curve plot output for problem 2-2 part c.
 
     Prob2-2_EquilibriumPath.png:
-        Planner view of equilibrium path for nodes 5 and 6 for problem 2-2 part d.
+        Planner view of equilibrium path for nodes 5 and 6 for problem 2-2 part d. The problem statement's
+        positive v (up) is my negative z direction (i.e. as the node moves down, the z component of u increases).
+        Component names are u, v, w in the x, y, z direction.
 
 trussClass.py
     Python class for a truss that is used for both HW problems.
