@@ -19,7 +19,7 @@ tol = 1e-12 # kN
 
 # P vectors
 Pcr = np.array([0, -0.98171345])
-gamma = [0, 0.25, 0.5, 0.75, 0.99, 0.999]
+gamma = [0, 0.20, 0.5, 0.75, 0.99, 0.999]
 # gamma = [0, 0.25, 0.5, 0.75, 0.99, 0.999, 0.75, 0.5, 0.25, 0, -0.25, -0.5] # Test for following load path
 # gamma = np.linspace(0.999999, 1.00000001, 2000)  # Used for finding Pcr, but the plot legend is not compatible
 
