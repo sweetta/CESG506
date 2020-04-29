@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 sys.path.insert(0, 'CESG506/Code/Assignments/Assignment 3')
 from trussClass import *
+from trussAssemble import *
 
 
 # Structure Parameters
@@ -76,50 +77,21 @@ G = [0]
 
 # Initial Step to find delta_s^2
 # Set Displacements and Construct Global K Matrix
-K_global = np.zeros([ndof, ndof])
-Fint = np.zeros(ndof)
-for ele in T:
-    xi = ele.nodeID[0]
-    xj = ele.nodeID[1]
-    xi_idx = range(xi*dim, (xi+1)*dim)
-    xj_idx = range(xj*dim, (xj+1)*dim)
-    ele.setDisp(u_n[xi_idx], u_n[xj_idx])
-    ke = ele.get_ke()
-    K_global[xi*dim:(xi+1)*dim:1, xi*dim:(xi+1)*dim:1] += ke
-    K_global[xj*dim:(xj+1)*dim:1, xj*dim:(xj+1)*dim:1] += ke
-    K_global[xi*dim:(xi+1)*dim:1, xj*dim:(xj+1)*dim:1] -= ke
-    K_global[xj*dim:(xj+1)*dim:1, xi*dim:(xi+1)*dim:1] -= ke
-    Fint[xi_idx] -= ele.get_F()
-    Fint[xj_idx] += ele.get_F()
-
+[K_global, Fint] = trussAssemble(T, u_n, dim, ndof)
 Kf = K_global[free_dof, :][:, free_dof]
-Fintf = Fint[free_dof]
 
 P = P0 + gamma_guess * Pbar
-R = P - Fintf
+R = P - Fint[free_dof]
 
 u_guess[free_dof] = u_n[free_dof] + np.dot(np.linalg.inv(Kf), R)
+
 s2 = np.dot(u_guess[free_dof], u_guess[free_dof]) + a*gamma_guess*gamma_guess
 print('(delta_s)^2 = {}, delta_s = {}'.format(s2, np.sqrt(s2)))
 
 flag = 0
 for i in range(500):
     for count in range(max_iteration + 1):
-        K_global = 0*K_global
-        Fint = 0*Fint
-        for ele in T:
-            xi = ele.nodeID[0]
-            xj = ele.nodeID[1]
-            xi_idx = range(xi * dim, (xi + 1) * dim)
-            xj_idx = range(xj * dim, (xj + 1) * dim)
-            ele.setDisp(u_guess[xi_idx], u_guess[xj_idx])
-            ke = ele.get_ke()
-            K_global[xi * dim:(xi + 1) * dim:1, xi * dim:(xi + 1) * dim:1] += ke
-            K_global[xj * dim:(xj + 1) * dim:1, xj * dim:(xj + 1) * dim:1] += ke
-            K_global[xi * dim:(xi + 1) * dim:1, xj * dim:(xj + 1) * dim:1] -= ke
-            K_global[xj * dim:(xj + 1) * dim:1, xi * dim:(xi + 1) * dim:1] -= ke
-            Fint[xi_idx] -= ele.get_F()
-            Fint[xj_idx] += ele.get_F()
+        [K_global, Fint] = trussAssemble(T, u_guess, dim, ndof)
 
         # Construct Kg Matrix
         Kf = K_global[free_dof, :][:, free_dof]
