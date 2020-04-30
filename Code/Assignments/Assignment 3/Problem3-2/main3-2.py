@@ -53,7 +53,7 @@ Uu = [0]
 Uv = [0]
 G = [0]
 
-# Initial Step to find delta_s^2
+# Initial Step to set delta_s^2
 # Set Displacements and Construct Global K Matrix
 [K_global, Fint] = trussAssemble(T, u_n, dim, ndof)
 Kf = K_global[free_dof, :][:, free_dof]
@@ -121,86 +121,33 @@ for i in range(60):
 # Transpose for easier plotting
 u_list = u_list.transpose()
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Plot of gamma vs displacement, part 4 of assignment problem
+# ----------------------------------------------------------------------------------------------------------------------
+
+# Read results from HW2
+HW2G = []
+HW2Uu = []
+HW2Uv = []
+f = open("CESG506/Code/Assignments/Assignment 3/Problem3-2/FromHW2/HW2outputs", "r")
+for line in f:
+    row = line.strip('\n').split(',')
+    HW2G.append(float(row[0]))
+    HW2Uu.append(float(row[1]))
+    HW2Uv.append(float(row[2]))
+f.close()
+
 plt.figure(1, figsize=(16, 8))
-plt.plot(Uu, G, label="$U_u$", marker='.')
-plt.plot(Uv, G, label="$U_v$", marker='.')
+plt.plot(HW2Uu, HW2G, label="$U_u$ - Displacement Control", marker='o', linestyle='--', linewidth='1')
+plt.plot(HW2Uv, HW2G, label="$U_v$ - Displacement Control", marker='o', linestyle='--', linewidth='1')
+plt.plot(Uu, G, label="$U_u$ - Arc-length Method", marker='x', linestyle='')
+plt.plot(Uv, G, label="$U_v$ - Arc-length Method", marker='x', linestyle='')
 
 plt.xlabel('displacement [m]')
 plt.ylabel('$\gamma$')
 
-plt.legend(loc='upper center', ncol=1, framealpha=1)
+plt.legend(loc='best', ncol=1, framealpha=1)
 plt.axhline(y=0, color='black')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-2/Prob3-2_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-2/Prob3-2_GammaVsDisp")
 plt.show()
-
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Plot of gamma vs displacement, part 3 of assignment problem
-# # ----------------------------------------------------------------------------------------------------------------------
-# plt.figure(1, figsize=(16, 8))
-# plt.plot(Uu, G, label="$U_u$", marker='.')
-# plt.plot(Uv, G, label="$U_v$", marker='.')
-#
-# plt.xlabel('displacement [m]')
-# plt.ylabel('$\gamma$')
-#
-# plt.legend(loc='upper center', ncol=1, framealpha=1)
-# plt.axhline(y=0, color='black')
-# plt.grid(True)
-# # plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_GammaVsDisp")
-# plt.show()
-
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Plot of u vs v, with Fx(u,v) and Fy(u,v) contour plot, part 4 of assignment problem
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Compute contour plot values
-# grid_n = 100
-# xlist = np.linspace(0.015, -0.010, grid_n)
-# ylist = np.linspace(0.1, -1.3, grid_n)
-# X, Y = np.meshgrid(xlist, ylist)
-# Zx = np.zeros((grid_n, grid_n))
-# Zy = np.zeros((grid_n, grid_n))
-#
-# x_idx = 0
-# for xi in xlist:
-#     y_idx = 0
-#     for yi in ylist:
-#         uv = np.array([xi, yi])
-#         t1.setDisp(zeroU, uv)
-#         t2.setDisp(zeroU, uv)
-#         F1 = t1.get_F()
-#         F2 = t2.get_F()
-#         Zx[x_idx, y_idx] = F1[0] + F2[0]
-#         Zy[x_idx, y_idx] = F1[1] + F2[1]
-#         y_idx = y_idx + 1
-#     x_idx = x_idx + 1
-#
-# # Plotting
-# plt.figure(2, figsize=(16, 8))
-#
-# # Fx
-# plt.subplot(1, 2, 1)
-# norm_x = colors.Normalize(vmin=-20, vmax=20)
-# plt.contourf(X, Y, Zx.transpose(), 100, cmap='RdBu_r', norm=norm_x)
-# plt.colorbar()
-# plt.plot(Uu, Uv, label='Displacement Path', marker='o', color='black')
-# plt.title('u vs v with $F_x$ [kN] Overlay')
-# plt.xlabel('x-displacement [m]')
-# plt.ylabel('y-displacement [m]')
-# plt.legend(loc='best', ncol=1, framealpha=1)
-# plt.grid(True)
-#
-# # Fy
-# plt.subplot(1, 2, 2)
-# norm_y = colors.Normalize(vmin=-3, vmax=3)
-# plt.contourf(X, Y, Zy.transpose(), 100, cmap='RdBu_r', norm=norm_y)
-# plt.colorbar()
-# plt.plot(Uu, Uv, label='Displacement Path', marker='o', color='black')
-# plt.title('u vs v with $F_y$ [kN] Overlay')
-# plt.xlabel('x-displacement [m]')
-# plt.ylabel('y-displacement [m]')
-# plt.legend(loc='best', ncol=1, framealpha=1)
-# plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 2/Problem2-1/Prob2-1_ContourPlot")
-#
-# plt.show()
