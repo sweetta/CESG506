@@ -161,7 +161,7 @@ plt.xlabel('Cumulative Step Count')
 plt.legend(loc='best', ncol=1, bbox_to_anchor=(1, 1))
 plt.grid(True)
 plt.tight_layout()
-plt.show()
 plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-1/R_vs_IterationStep")
+plt.show()
 
 
