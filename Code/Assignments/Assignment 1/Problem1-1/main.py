@@ -12,7 +12,7 @@ EA = 2100  # kN
 
 whatToPlot = 'P'  # use 'P' for force, 'e' for strains
 umax = 2.5*H      # plot for u = [0, umax]
-n_pts = 1001      # number of points to plot
+n_pts = 101      # number of points to plot
 
 # Undeformed length parameter calculations
 LL = w*w + H*H    # Undeformed length squared
@@ -97,3 +97,4 @@ plt.axhline(y=0, color='black')
 plt.grid(True)
 plt.savefig("CESG506/Code/Assignments/Assignment 1/Problem1-1/{}".format(fileName))
 plt.show()
+

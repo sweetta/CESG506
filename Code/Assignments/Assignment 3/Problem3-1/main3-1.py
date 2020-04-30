@@ -5,16 +5,15 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 sys.path.insert(0, 'CESG506/Code/Assignments/Assignment 3')
 from trussClass import *
 from trussAssemble import *
 
-
-Pref = 0.99    # Reference Load [kN]
+Pref = 0.30         # Reference Load [kN]
+gamma_guess = 0.25  # Gamma used to set step size (delta_s^2)
 
 # Convergence criteria
-a = 0.0
+a = 0
 max_iteration = 50
 tol = 5e-11     # np.linalg.norm([R],[g]) <= tol
 
@@ -41,18 +40,16 @@ Pbar = Pbar[free_dof]
 # Start at u = zero, gamma = 0.2
 u_n = np.zeros(ndof)
 gamma_n = 0.0
-gamma_guess = 0.2
 
 # Initialization Lists for plotting
 zeroU = np.zeros(ndof)
 u_guess = np.zeros(ndof)
-Results = [{'u': u_n, 'gamma': gamma_n, 'R_list': 0, 'Iterations': 0}]
 u_list = np.array(u_n)
-Uu = [0]
 Uv = [0]
 G = [0]
+R_list = []
 
-# Initial Step to find delta_s^2
+# Initial Step to set delta_s^2
 # Set Displacements and Construct Global K Matrix
 [K_global, Fint] = trussAssemble(T, u_n, dim, ndof)
 Kf = K_global[free_dof, :][:, free_dof]
@@ -65,8 +62,8 @@ u_guess[free_dof] = u_n[free_dof] + np.dot(np.linalg.inv(Kf), R)
 s2 = np.dot(u_guess[free_dof], u_guess[free_dof]) + a*gamma_guess*gamma_guess
 print('(delta_s)^2 = {}, delta_s = {}'.format(s2, np.sqrt(s2)))
 
-flag = 0
-for i in range(20):
+flag = 0    # Used for exiting loop
+for i in range(1001):
     for count in range(max_iteration + 1):
         [K_global, Fint] = trussAssemble(T, u_guess, dim, ndof)
 
@@ -80,6 +77,7 @@ for i in range(20):
         R = P - Fint[free_dof]
         g = np.dot((u_guess-u_n)[free_dof], (u_guess-u_n)[free_dof]) + a*(gamma_guess-gamma_n)*(gamma_guess-gamma_n) - s2
         Rg = np.append([R], [g])
+        R_list.append(np.linalg.norm(Rg))
 
         # Solve for Change in u and gamma guess
         dU = np.dot(np.linalg.inv(Kg), Rg)
@@ -100,12 +98,16 @@ for i in range(20):
                   'Stopped at Max Iteration = {}'.format(u_guess, gamma_n*Pref, gamma_guess, count))
             flag = 1
 
+        # Exit if displacement reaches desired magnitude
+        if np.linalg.norm(u_guess) >= 1.2:
+            flag = 1
+
+    # Misc Exit Strategy
     if flag == 1:
         break
 
     # Store Converged Results
     u_list = np.vstack((u_list, u_guess))
-    Uu.append(u_guess[2])
     Uv.append(u_guess[3])
     G.append(gamma_guess)
 
@@ -120,15 +122,46 @@ for i in range(20):
 # Transpose for easier plotting
 u_list = u_list.transpose()
 
+# ---------------------------------------------------------------------------------------------------------------
+# Plotting Displacement vs Gamma - Part 3 of Assignment Problem 1
+# ---------------------------------------------------------------------------------------------------------------
+# Read outputs from HW1
+f = open("CESG506/Code/Assignments/Assignment 3/Problem3-1/FromHW1/HW1outputs", "r")
+HW1P = []
+for line in f:
+    Pi = float(line.strip('\n'))
+    HW1P.append(Pi/Pref)
+f.close()
+HW1U = np.linspace(0, 2.5*0.5, len(HW1P))
+
 plt.figure(1, figsize=(16, 8))
-plt.plot(Uu, G, label="$U_u$", marker='.')
-plt.plot(Uv, G, label="$U_v$", marker='.')
+plt.plot(-HW1U, HW1P, label="$From HW1$", linestyle='--', linewidth=1)
+plt.plot(Uv, G, label="$U_v$", marker='o', linestyle='')
 
 plt.xlabel('displacement [m]')
 plt.ylabel('$\gamma$')
+plt.title('$alpha={}$'.format(a))
 
-plt.legend(loc='upper center', ncol=1, framealpha=1)
+plt.legend(loc='best', ncol=1, framealpha=1)
 plt.axhline(y=0, color='black')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-2/Prob3-2_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-1/Prob3-1_GammaVsDisp_a=0")
 plt.show()
+
+# ---------------------------------------------------------------------------------------------------------------
+# Plotting Errors - Part 4 of Assignment Problem 1
+# ---------------------------------------------------------------------------------------------------------------
+plt.figure(2, figsize=(16, 8))
+plt.plot(range(len(R_list)), R_list, '-o')
+plt.plot([], '-', label='Tol = {}'.format(tol), color='black',)
+plt.axhline(y=tol, color='black')
+plt.yscale('log')
+plt.ylabel('|R|')
+plt.xlabel('Cumulative Step Count')
+plt.legend(loc='best', ncol=1, bbox_to_anchor=(1, 1))
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-1/R_vs_IterationStep")
+
+

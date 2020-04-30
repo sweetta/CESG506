@@ -22,7 +22,7 @@ Pref = 6.1685    # Reference Load [kN]
 
 # Convergence criteria
 a = 0.0
-max_iteration = 50
+max_iteration = 20
 tol = 5e-11     # np.linalg.norm([R],[g]) <= tol
 
 # Create Nodes
@@ -64,7 +64,10 @@ Pbar = Pbar[free_dof]
 # Start at u = zero, gamma = 0.2
 u_n = np.zeros(ndof)
 gamma_n = 0.0
-gamma_guess = 1
+gamma_guess = 30
+# gamma_guess = 5
+# gamma_guess = 5.1
+# gamma_guess = 10
 
 # Initialization Lists for plotting
 zeroU = np.zeros(ndof)
@@ -84,6 +87,7 @@ R = P - Fint[free_dof]
 u_guess[free_dof] = u_n[free_dof] + np.dot(np.linalg.inv(Kf), R)
 
 s2 = np.dot(u_guess[free_dof], u_guess[free_dof]) + a*gamma_guess*gamma_guess
+
 print('(delta_s)^2 = {}, delta_s = {}'.format(s2, np.sqrt(s2)))
 
 flag = 0
@@ -170,73 +174,18 @@ plt.grid(True)
 # plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_DeformedShape")
 plt.show()
 
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Plot of gamma vs displacement, part 3 of assignment problem
-# # ----------------------------------------------------------------------------------------------------------------------
-# plt.figure(1, figsize=(16, 8))
-# plt.plot(Uu, G, label="$U_u$", marker='.')
-# plt.plot(Uv, G, label="$U_v$", marker='.')
-#
-# plt.xlabel('displacement [m]')
-# plt.ylabel('$\gamma$')
-#
-# plt.legend(loc='upper center', ncol=1, framealpha=1)
-# plt.axhline(y=0, color='black')
-# plt.grid(True)
-# # plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_GammaVsDisp")
-# plt.show()
+# ----------------------------------------------------------------------------------------------------------------------
+# Plot of gamma vs displacement, part 3 of assignment problem
+# ----------------------------------------------------------------------------------------------------------------------
+plt.figure(2, figsize=(8, 8))
+plt.plot(u_list[2*23], G, label="$U_u$", marker='.')
+plt.plot(u_list[2*23+1], G, label="$U_v$", marker='.')
 
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Plot of u vs v, with Fx(u,v) and Fy(u,v) contour plot, part 4 of assignment problem
-# # ----------------------------------------------------------------------------------------------------------------------
-# # Compute contour plot values
-# grid_n = 100
-# xlist = np.linspace(0.015, -0.010, grid_n)
-# ylist = np.linspace(0.1, -1.3, grid_n)
-# X, Y = np.meshgrid(xlist, ylist)
-# Zx = np.zeros((grid_n, grid_n))
-# Zy = np.zeros((grid_n, grid_n))
-#
-# x_idx = 0
-# for xi in xlist:
-#     y_idx = 0
-#     for yi in ylist:
-#         uv = np.array([xi, yi])
-#         t1.setDisp(zeroU, uv)
-#         t2.setDisp(zeroU, uv)
-#         F1 = t1.get_F()
-#         F2 = t2.get_F()
-#         Zx[x_idx, y_idx] = F1[0] + F2[0]
-#         Zy[x_idx, y_idx] = F1[1] + F2[1]
-#         y_idx = y_idx + 1
-#     x_idx = x_idx + 1
-#
-# # Plotting
-# plt.figure(2, figsize=(16, 8))
-#
-# # Fx
-# plt.subplot(1, 2, 1)
-# norm_x = colors.Normalize(vmin=-20, vmax=20)
-# plt.contourf(X, Y, Zx.transpose(), 100, cmap='RdBu_r', norm=norm_x)
-# plt.colorbar()
-# plt.plot(Uu, Uv, label='Displacement Path', marker='o', color='black')
-# plt.title('u vs v with $F_x$ [kN] Overlay')
-# plt.xlabel('x-displacement [m]')
-# plt.ylabel('y-displacement [m]')
-# plt.legend(loc='best', ncol=1, framealpha=1)
-# plt.grid(True)
-#
-# # Fy
-# plt.subplot(1, 2, 2)
-# norm_y = colors.Normalize(vmin=-3, vmax=3)
-# plt.contourf(X, Y, Zy.transpose(), 100, cmap='RdBu_r', norm=norm_y)
-# plt.colorbar()
-# plt.plot(Uu, Uv, label='Displacement Path', marker='o', color='black')
-# plt.title('u vs v with $F_y$ [kN] Overlay')
-# plt.xlabel('x-displacement [m]')
-# plt.ylabel('y-displacement [m]')
-# plt.legend(loc='best', ncol=1, framealpha=1)
-# plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 2/Problem2-1/Prob2-1_ContourPlot")
-#
-# plt.show()
+plt.xlabel('displacement [m]')
+plt.ylabel('$\gamma$')
+
+plt.legend(loc='upper center', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+# plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_GammaVsDisp")
+plt.show()
