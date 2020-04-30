@@ -25,6 +25,15 @@ a = 0.0
 max_iteration = 20
 tol = 5e-11     # np.linalg.norm([R],[g]) <= tol
 
+# Initial Gamma for setting delta_s
+gamma_guess = 1
+# gamma_guess = 5
+# gamma_guess = 5.1
+# gamma_guess = 10
+
+delta_s_Factor = 5000  # Manually scale delta_s
+
+
 # Create Nodes
 X = []
 for idx in range(12):
@@ -64,10 +73,7 @@ Pbar = Pbar[free_dof]
 # Start at u = zero, gamma = 0.2
 u_n = np.zeros(ndof)
 gamma_n = 0.0
-gamma_guess = 30
-# gamma_guess = 5
-# gamma_guess = 5.1
-# gamma_guess = 10
+
 
 # Initialization Lists for plotting
 zeroU = np.zeros(ndof)
@@ -87,6 +93,7 @@ R = P - Fint[free_dof]
 u_guess[free_dof] = u_n[free_dof] + np.dot(np.linalg.inv(Kf), R)
 
 s2 = np.dot(u_guess[free_dof], u_guess[free_dof]) + a*gamma_guess*gamma_guess
+s2 = s2*np.sqrt(delta_s_Factor)
 
 print('(delta_s)^2 = {}, delta_s = {}'.format(s2, np.sqrt(s2)))
 
@@ -126,7 +133,7 @@ for i in range(500):
             flag = 1
 
         # Exit if top node hits the ground
-        if u_guess[-1] + X[23][1] <= -0.05:
+        if u_guess[-1] + X[23][1] <= -0.1:
             flag = 1
 
     if flag == 1:
@@ -148,9 +155,36 @@ for i in range(500):
 u_list = u_list.transpose()
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Plot of Deformations
+# Create Elements Table - part 1 of assignment problem 3
+# ----------------------------------------------------------------------------------------------------------------------
+f = open("CESG506/Code/Assignments/Assignment 3/Problem3-3/ElementsTable.txt", "w+")
+count = 0
+for element in T:
+    f.write('Truss ID: {}\t From node {} to node {}\n'.format(count, element.nodeID[0], element.nodeID[1]))
+    count += 1
+f.close()
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Plot of gamma vs displacement, part 4 of assignment problem 3
 # ----------------------------------------------------------------------------------------------------------------------
 plt.figure(1, figsize=(8, 8))
+plt.plot(u_list[2*23], G, label="$U_u$ [x-dir Top Right Node]", marker='.')
+plt.plot(u_list[2*23+1], G, label="$U_v$ [y-dir Top Right Node]", marker='.')
+
+plt.xlabel('displacement [m]')
+plt.ylabel('$\gamma$')
+
+plt.legend(loc='upper center', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.axhline(y=1, linestyle='--')
+plt.grid(True)
+plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_GammaVsDisp")
+plt.show()
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Plot of Deformations - part 5 of assignment problem 3
+# ----------------------------------------------------------------------------------------------------------------------
+plt.figure(2, figsize=(8, 8))
 
 # Plotting Node Trajectory
 for i in range(24):
@@ -171,21 +205,5 @@ plt.ylabel('v [m]')
 
 plt.axis('equal')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_DeformedShape")
-plt.show()
-
-# ----------------------------------------------------------------------------------------------------------------------
-# Plot of gamma vs displacement, part 3 of assignment problem
-# ----------------------------------------------------------------------------------------------------------------------
-plt.figure(2, figsize=(8, 8))
-plt.plot(u_list[2*23], G, label="$U_u$", marker='.')
-plt.plot(u_list[2*23+1], G, label="$U_v$", marker='.')
-
-plt.xlabel('displacement [m]')
-plt.ylabel('$\gamma$')
-
-plt.legend(loc='upper center', ncol=1, framealpha=1)
-plt.axhline(y=0, color='black')
-plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 3/Problem3-3/Prob3-3_DeformedShape")
 plt.show()
