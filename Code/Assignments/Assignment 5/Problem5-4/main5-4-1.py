@@ -1,9 +1,12 @@
-from helperFunctions import *
-from curvedBeamClass import *
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
+sys.path.insert(0, 'CESG506/Code/Assignments/Assignment 5')
+from curvedBeamClass import *
+from helperFunctions import *
 
-# Problem 5-3 Study the snap-through behavior of a shallow arch
+
+# Problem 5-4 Buckling of a beam
 
 # User input
 W = 5       # m
@@ -12,7 +15,14 @@ EA = 10000  # kN
 EI = 10     # kN*m2
 Pc = 3.95   # Approximately Pcr
 
-nEle = 64    # Equally spaced elements
+nEle = 32    # Equally spaced elements
+
+# Convergence criteria and arc-length initiation parameters
+max_iteration = 20
+tol = 1e-9
+a = 0.0
+delta_s_Factor = 5
+gamma_guess = 0.1
 
 # User enters the H(x) and its derivatives
 def elevation(x):
@@ -22,24 +32,17 @@ def elevation(x):
     ddh = c*2
     return (h, dh, ddh)
 
-# Convergence criteria
-max_iteration = 20
-tol = 1e-9
-a = 0.0
-delta_s_Factor = 5
-gamma_guess = 0.1
+
 
 # ----------------------------------------------------------------------------------------------------
-# END USER INPUT (unless you want to change boundary conditions, the following creates a pin-pin beam)
+# END USER INPUT (unless you want to change boundary conditions, the following creates a pin-roller beam)
 # ----------------------------------------------------------------------------------------------------
 dim = 3             # DOF per node
 nNds = nEle+1       # Number of nodes
 ndof = dim*nNds     # Number of DOFs globally
-umidIdx = round(nEle/2)*dim + 1
+umidIdx = round(nEle/2)*dim + 1     # Keeping track of
 uq1Idx = round(nEle/4)*dim + 1
 uq3Idx = round(3*nEle/4)*dim + 1
-
-
 
 Lx = W / nEle
 Xinit = np.linspace(0, W, nNds)
@@ -89,11 +92,13 @@ u_guess = np.zeros(ndof)
 Results = [{'q': u_n, 'gamma': gamma_n, 'R_list': 0, 'Iterations': 0}]
 u_list = np.array(u_n)
 G = [0]
+detKt = []
 
 # Initial Step to find delta_s^2
 # Set Displacements and Construct Global K Matrix
 [K_global, Fint] = beamAssemble(elements, u_n, dim, ndof)
 Kf = K_global[free_dof, :][:, free_dof]
+detKt.append(np.linalg.det(Kf))
 
 P = gamma_guess * Pbar
 R = P - Fint[free_dof]
@@ -128,20 +133,24 @@ for i in range(500):
         u_guess[free_dof] = u_guess[free_dof] + dU[0:len(free_dof)]
         gamma_guess = gamma_guess + dU[-1]
 
+        # Exit if passes Pcr by a factor of 2
+        if gamma_guess > 2:
+            flag = 1
+
+        if np.linalg.det(Kf) < 0:
+            flag = 1
+            print('Det(Kf) < 0 at P = {}'.format(gamma_guess*Pc))
+
         # Check Convergence
         if np.linalg.norm(Rg) <= tol:
-            print('u_mid = {}m, w = {:.6f} kN/m '
+            print('u_mid = {}m, P = {:.6f} kN '
                   'Iteration Count = {}, u_{}'.format(u_n[umidIdx], gamma_n * Pc, count, i))
             break
 
         # Save and Print Results if it does not converge by max iteration
         if count == max_iteration:  # Exit loop if max iteration is reached before convergence
-            print('u_mid = {}m, w = {:.6f} kN '
+            print('u_mid = {}m, P = {:.6f} kN '
                   'Stopped at Max Iteration = {}'.format(u_guess, gamma_n * Pc, count))
-            flag = 1
-
-        # Exit if snaps through
-        if gamma_n > 2:
             flag = 1
 
     if flag == 1:
@@ -150,6 +159,7 @@ for i in range(500):
     # Store Converged Results
     u_list = np.vstack((u_list, u_guess))
     G.append(gamma_guess)
+    detKt.append(np.linalg.det(Kf))
 
     # Initiate Next Guess
     u_last = u_n
@@ -161,6 +171,23 @@ for i in range(500):
 
 # Transpose for easier plotting
 u_list = u_list.transpose()
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Plot of gamma vs det(Kf), part 1 of assignment problem 4
+# ----------------------------------------------------------------------------------------------------------------------
+plt.figure(1, figsize=(8, 8))
+plt.plot(detKt, G, label="$det(K_f)$", marker='.')
+
+
+plt.xlabel('displacement [m]')
+plt.ylabel('$\gamma$')
+
+plt.legend(loc='best', ncol=1, framealpha=1)
+plt.axhline(y=0, color='black')
+plt.grid(True)
+# plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-3/Prob5-3_GammaVsDisp")
+plt.show()
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Plot of gamma vs displacement, part 4 of assignment problem 3

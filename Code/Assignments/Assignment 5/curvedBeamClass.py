@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+sys.path.insert(0, 'CESG506/Code/Assignments/Assignment 5')
 from helperFunctions import *
 
 class curvedBeamClass(object):
