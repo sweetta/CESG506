@@ -13,9 +13,9 @@ W = 5       # m
 H = W/100    # m
 EA = 10000  # kN
 EI = 10     # kN*m2
-Pc = 3.95   # Approximately Pcr
+Pc = np.pi*np.pi*EI/(W*W)
 
-nEle = 32    # Equally spaced elements
+nEle = 64    # Equally spaced elements
 
 # Convergence criteria and arc-length initiation parameters
 max_iteration = 20
@@ -178,14 +178,14 @@ u_list = u_list.transpose()
 plt.figure(1, figsize=(8, 8))
 plt.plot(detKt, G, label="$det(K_f)$", marker='.')
 
-
-plt.xlabel('displacement [m]')
+plt.title('{} Element Mesh, Imperfect Beam'.format(nEle))
+plt.xlabel('det(Kt) [m]')
 plt.ylabel('$\gamma$')
 
 plt.legend(loc='best', ncol=1, framealpha=1)
 plt.axhline(y=0, color='black')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-3/Prob5-3_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-4/Prob5-4-2_GammaVsDetKt_{}Ele".format(nEle))
 plt.show()
 
 
@@ -197,13 +197,14 @@ plt.plot(u_list[umidIdx], G, label="$U_u$ [y-dir Mid Node]", marker='.')
 plt.plot(u_list[uq1Idx], G, label="$U_u$ [y-dir 1/4 Node]", marker='.')
 plt.plot(u_list[uq3Idx], G, label="$U_u$ [y-dir 3/4 Node]", marker='.')
 
+plt.title('{} Element Mesh, Imperfect Beam'.format(nEle))
 plt.xlabel('displacement [m]')
 plt.ylabel('$\gamma$')
 
 plt.legend(loc='best', ncol=1, framealpha=1)
 plt.axhline(y=0, color='black')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-3/Prob5-3_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-4/Prob5-4-2_GammaVsDisp_{}Ele".format(nEle))
 plt.show()
 
 

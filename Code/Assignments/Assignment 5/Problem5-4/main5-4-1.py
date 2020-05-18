@@ -6,16 +6,16 @@ from curvedBeamClass import *
 from helperFunctions import *
 
 
-# Problem 5-4 Buckling of a beam
+# Problem 5-4 Buckling of a beam - Part 1, straight beam
 
 # User input
 W = 5       # m
-H = W/100    # m
+H = 0*W/100    # m (Modified to just be zero so the beam is straight)
 EA = 10000  # kN
 EI = 10     # kN*m2
-Pc = 3.95   # Approximately Pcr
-
-nEle = 32    # Equally spaced elements
+# Pc = 3.95   # Approximately Pcr (pi^2*EI/L^2)
+Pc = np.pi*np.pi*EI/(W*W)
+nEle = 16    # Equally spaced elements
 
 # Convergence criteria and arc-length initiation parameters
 max_iteration = 20
@@ -153,9 +153,6 @@ for i in range(500):
                   'Stopped at Max Iteration = {}'.format(u_guess, gamma_n * Pc, count))
             flag = 1
 
-    if flag == 1:
-        break
-
     # Store Converged Results
     u_list = np.vstack((u_list, u_guess))
     G.append(gamma_guess)
@@ -169,6 +166,9 @@ for i in range(500):
     gamma_n = gamma_guess
     gamma_guess = 2*gamma_n - gamma_last
 
+    if flag == 1:
+        break
+
 # Transpose for easier plotting
 u_list = u_list.transpose()
 
@@ -178,36 +178,12 @@ u_list = u_list.transpose()
 plt.figure(1, figsize=(8, 8))
 plt.plot(detKt, G, label="$det(K_f)$", marker='.')
 
-
-plt.xlabel('displacement [m]')
+plt.title('{} Element Mesh, Pref = {}'.format(nEle, Pc))
+plt.xlabel('det(Kt) [m]')
 plt.ylabel('$\gamma$')
 
 plt.legend(loc='best', ncol=1, framealpha=1)
 plt.axhline(y=0, color='black')
 plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-3/Prob5-3_GammaVsDisp")
+plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-4/Prob5-4_GammaVsDetKt-StraightBeam")
 plt.show()
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-# Plot of gamma vs displacement, part 4 of assignment problem 3
-# ----------------------------------------------------------------------------------------------------------------------
-plt.figure(1, figsize=(8, 8))
-plt.plot(u_list[umidIdx], G, label="$U_u$ [y-dir Mid Node]", marker='.')
-plt.plot(u_list[uq1Idx], G, label="$U_u$ [y-dir 1/4 Node]", marker='.')
-plt.plot(u_list[uq3Idx], G, label="$U_u$ [y-dir 3/4 Node]", marker='.')
-
-plt.xlabel('displacement [m]')
-plt.ylabel('$\gamma$')
-
-plt.legend(loc='best', ncol=1, framealpha=1)
-plt.axhline(y=0, color='black')
-plt.grid(True)
-# plt.savefig("CESG506/Code/Assignments/Assignment 5/Problem5-3/Prob5-3_GammaVsDisp")
-plt.show()
-
-
-
-
-x = 2
-
