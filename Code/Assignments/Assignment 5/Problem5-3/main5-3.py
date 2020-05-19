@@ -164,8 +164,9 @@ for i in range(500):
             flag = 1
 
         # Exit once the required w is negative (snap-though has occurred)
-        if gamma_n < 0:
-            flag = 1
+        # if gamma_n < 0:
+        #     flag = 1
+
 
     if flag == 1:
         break
